@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everything is Gonna Be Alright</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for aesthetic enhancements */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f3e8; /* Soft, relaxing background */
+        }
+        .game-container {
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+        /* Stress Bar Gradient */
+        .stress-level {
+            background: linear-gradient(to right, #61c272, #ffcc5c, #ff5757); /* Green to Yellow to Red */
+            transition: width 0.5s ease-out, background-color 0.5s;
+        }
+        /* Button Styling */
+        .coping-button {
+            transition: all 0.2s ease;
+        }
+        .coping-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .coping-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            background-color: #e5e7eb !important;
+            color: #9ca3af !important;
+            transform: none;
+            box-shadow: none;
+        }
+        /* Stress Feed Scrollbar Styling */
+        .stressors-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+        .stressors-feed::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="p-4 flex justify-center items-center min-h-screen">
+
+    <div id="app" class="game-container w-full p-6 sm:p-8 rounded-xl">
+        <h1 class="text-3xl font-bold text-center text-gray-700 mb-6">
+            Everything is Gonna Be Alright ☀️
+        </h1>
+        <p class="text-center text-sm text-gray-500 mb-6">
+            Manage your stress by using coping mechanisms before the bar fills up!
+        </p>
+
+        <!-- 1. Incoming Stressors Feed -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Incoming Stressors</h2>
+            <div id="stress-feed" class="stressors-feed h-40 overflow-y-scroll border-2 border-gray-200 p-3 rounded-lg bg-gray-50">
+                <!-- Stressor items will be inserted here -->
+            </div>
+        </div>
+
+        <!-- 2. Stress Bar -->
+        <div class="stress-bar-container mb-8">
+            <div class="bar-label font-bold text-gray-700 mb-2 flex justify-between items-center">
+                <span>Current Stress Level</span>
+                <span id="stress-value">0%</span>
+            </div>
+            <div class="stress-bar bg-gray-300 rounded-full h-8 overflow-hidden">
+                <div id="stress-level" class="stress-level h-full rounded-full flex items-center justify-end pr-3 text-white font-bold text-sm" style="width: 0%;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Coping Mechanisms -->
+        <div class="mb-4">
+            <!-- NEW: Pause Message Banner - Visible when stress is 100% -->
+            <div id="pause-message" class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-4 mb-4 rounded hidden" role="alert">
+                <p class="font-bold text-center">You Got This! Do something to destress!</p>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Coping Mechanisms</h2>
+            <div id="coping-mechanisms" class="flex flex-wrap gap-3 justify-center">
+                <button class="coping-button bg-green-400 text-green-900 px-4 py-2 rounded-full shadow-md flex-grow" data-relief="20" data-cooldown="2">
+                    🚶 Walk in the Sun
+                </button>
+                <button class="coping-button bg-blue-400 text-blue-900 px-4 py-2 rounded-full shadow-md flex-grow" data-relief="35" data-cooldown="3">
+                    🗣️ Talk to My Girl
+                </button>
+                <button class="coping-button bg-purple-400 text-purple-900 px-4 py-2 rounded-full shadow-md flex-grow" data-relief="15" data-cooldown="3">
+                    🍷 Drink a Glass of Wine
+                </button>
+                <button class="coping-button bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full shadow-md flex-grow" data-relief="10" data-cooldown="1">
+                    🍵 Drink a Little Matcha
+                </button>
+                <button class="coping-button bg-indigo-400 text-indigo-900 px-4 py-2 rounded-full shadow-md flex-grow" data-relief="25" data-cooldown="2">
+                    ✅ Do a little work
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Over/Win Message Modal (Used ONLY for Win/Loss) -->
+        <div id="message-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-8 rounded-xl max-w-sm w-full text-center shadow-2xl">
+                <h3 id="modal-title" class="text-2xl font-bold mb-4 text-red-600">Stress Overload!</h3>
+                <p id="modal-text" class="mb-6 text-gray-600">Whoa there, take a deep breath. Let's try that again. Everything is gonna be alright.</p>
+                <button id="restart-button" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-indigo-700 transition duration-150">
+                    Start Anew
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Core Game Variables ---
+        let currentStress = 0;
+        const STRESS_INCREASE_PER_TICK = 5; // % stress added per stressor
+        const STRESSOR_INTERVAL_MS = 2000; 
+        let gameInterval = null;
+        const MAX_STRESS = 100;
+        let winTimeout = null; // Variable to hold the win timeout ID
+        let timeElapsedOnWinTimer = 0;
+        let winTimerStart = 0;
+
+        // --- DOM Elements ---
+        const stressLevelEl = document.getElementById('stress-level');
+        const stressValueEl = document.getElementById('stress-value');
+        const stressFeedEl = document.getElementById('stress-feed');
+        const copingContainer = document.getElementById('coping-mechanisms');
+        const messageModal = document.getElementById('message-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalText = document.getElementById('modal-text');
+        const restartButton = document.getElementById('restart-button');
+        const pauseMessage = document.getElementById('pause-message'); // NEW DOM element
+
+        // Expanded list of 50 common, relatable stressors
+        const STRESSOR_MESSAGES = [
+            // Finances & Money (10)
+            "A debt collector called today.",
+            "My credit card statement arrived, and it's high.",
+            "The rent/mortgage is due soon.",
+            "I need to save more for retirement.",
+            "An unexpected car repair bill came in.",
+            "Need to finally finish my taxes.",
+            "My checking account is running low.",
+            "I need to ask my boss for a raise.",
+            "Inflation is making groceries too expensive.",
+            "My health insurance deductible is still very high.",
+            // Work & Career (10)
+            "The project deadline moved up.",
+            "I have too many back-to-back meetings today.",
+            "I'm feeling seriously burned out at work.",
+            "My boss gave me extra weekend work.",
+            "I need to update my resume for future plans.",
+            "I can't find a good work-life balance.",
+            "I'm worried about job security after the last meeting.",
+            "My commute was absolutely terrible this morning.",
+            "I need to train a new coworker next week.",
+            "I haven't taken a proper vacation in months.",
+            // Health & Wellness (10)
+            "I woke up with a minor ache/pain.",
+            "I need to schedule that dentist appointment.",
+            "I'm definitely not getting enough sleep.",
+            "I need to force myself to start exercising again.",
+            "I really should probably eat healthier meals.",
+            "I forgot to take my daily vitamins.",
+            "I saw a scary headline about a new virus.",
+            "My seasonal allergies are acting up badly.",
+            "I need to find a new primary care doctor.",
+            "I feel guilty about that enormous dessert I had.",
+            // Relationships & Social (10)
+            "I need to have a tough conversation with my partner.",
+            "I still haven't called my parents back.",
+            "My friend is going through a rough patch right now.",
+            "I'm worried about my child's latest schoolwork.",
+            "I'm tired of awkward small talk with strangers.",
+            "I missed my favorite show's new episode.",
+            "I need to plan dinner for the next five nights.",
+            "My family member is being difficult.",
+            "I forgot a family member's birthday.",
+            "I promised to volunteer but now I'm too busy.",
+            // Daily Annoyances & Chores (10)
+            "My neighbor's dog won't stop barking late at night.",
+            "The internet is running incredibly slow.",
+            "My phone battery is almost dead and I forgot the charger.",
+            "I lost my keys (yes, again).",
+            "I need to dedicate time to clean out the garage.",
+            "The roof looks like it needs urgent repair.",
+            "I have to drive home in heavy rain/snow.",
+            "The traffic lights are all red today, consistently.",
+            "I need to stop procrastinating on organizing that drawer.",
+            "I need to unsubscribe from a bunch of spam emails."
+        ];
+
+        // --- Utility Functions ---
+
+        /**
+         * Updates the visual representation of the stress bar.
+         */
+        function updateStressBar() {
+            // Ensure stress stays within [0, 100] bounds
+            currentStress = Math.min(MAX_STRESS, Math.max(0, currentStress));
+
+            // Update the width and text
+            stressLevelEl.style.width = `${currentStress}%`;
+            stressValueEl.textContent = `${currentStress}%`;
+
+            // Update color based on stress level
+            let color = '';
+            if (currentStress <= 35) {
+                // Low stress: Green/Calm
+                color = 'bg-green-500';
+            } else if (currentStress <= 75) {
+                // Medium stress: Yellow/Warning
+                color = 'bg-yellow-500';
+            } else {
+                // High stress: Red/Danger
+                color = 'bg-red-500';
+            }
+            stressLevelEl.className = `stress-level h-full rounded-full flex items-center justify-end pr-3 text-white font-bold text-sm ${color}`;
+
+            // If stress hits 100, pause the game
+            if (currentStress >= MAX_STRESS) {
+                currentStress = MAX_STRESS; // Cap at 100%
+                handleMaxStressPause();
+            }
+        }
+
+        /**
+         * Adds a new stressor to the feed and increases stress.
+         */
+        function addNewStressor() {
+            // 1. Get a random stress message
+            const randomIndex = Math.floor(Math.random() * STRESSOR_MESSAGES.length);
+            const message = STRESSOR_MESSAGES[randomIndex];
+
+            // 2. Create the DOM element
+            const stressorItem = document.createElement('div');
+            stressorItem.className = 'p-2 border-b border-gray-200 text-sm italic text-gray-500 last:border-b-0 animate-pulse';
+            stressorItem.textContent = message;
+
+            // 3. Insert at the top of the feed and scroll
+            stressFeedEl.prepend(stressorItem);
+            // Optionally limit the feed length
+            while (stressFeedEl.children.length > 15) {
+                stressFeedEl.removeChild(stressFeedEl.lastChild);
+            }
+
+            // 4. Increase stress level
+            currentStress += STRESS_INCREASE_PER_TICK;
+            updateStressBar();
+        }
+
+        /**
+         * Handles the temporary pause state when stress hits 100%.
+         */
+        function handleMaxStressPause() {
+            if (gameInterval === null) return; // Already paused
+
+            // Pause stressor interval
+            clearInterval(gameInterval);
+            gameInterval = null; // Mark as paused
+            
+            // Pause win timer and record elapsed time
+            if (winTimeout) {
+                clearTimeout(winTimeout);
+                timeElapsedOnWinTimer += Date.now() - winTimerStart;
+                winTimeout = null;
+            }
+
+            // Display the localized pause message (allowing buttons to be clicked)
+            pauseMessage.classList.remove('hidden'); 
+            
+            // Ensure buttons are clickable (even if they were on cooldown)
+            document.querySelectorAll('.coping-button').forEach(btn => btn.disabled = false);
+        }
+
+        /**
+         * Resumes the game after a successful coping mechanism use while paused.
+         */
+        function resumeGame() {
+            // Hide the localized pause message
+            pauseMessage.classList.add('hidden');
+            
+            // Restart the stressor interval
+            if (gameInterval === null) {
+                gameInterval = setInterval(addNewStressor, STRESSOR_INTERVAL_MS);
+            }
+
+            // Resume the win timer
+            const remainingTime = 60000 - timeElapsedOnWinTimer;
+            if (remainingTime > 0) {
+                winTimerStart = Date.now();
+                winTimeout = setTimeout(gameWin, remainingTime);
+            }
+        }
+        
+        /**
+         * Handles the win state (survive for 1 minute).
+         */
+        function gameWin() {
+            clearInterval(gameInterval);
+            gameInterval = null;
+            if (winTimeout) clearTimeout(winTimeout);
+
+            modalTitle.textContent = "You Got This!";
+            modalTitle.classList.remove('text-red-600', 'text-indigo-600');
+            modalTitle.classList.add('text-green-600');
+
+            modalText.textContent = "You successfully managed your stress for a full minute. Time for a well-deserved break!";
+            
+            // Show restart button for a full restart
+            restartButton.classList.remove('hidden'); 
+            messageModal.classList.remove('hidden');
+            messageModal.classList.add('flex');
+            pauseMessage.classList.add('hidden');
+
+            // Disable all coping buttons
+            document.querySelectorAll('.coping-button').forEach(btn => btn.disabled = true);
+        }
+
+        /**
+         * The main game loop function.
+         */
+        function startGame() {
+            // Reset state
+            currentStress = 0;
+            stressFeedEl.innerHTML = '';
+            timeElapsedOnWinTimer = 0;
+            
+            // Reset modal appearance
+            modalTitle.classList.remove('text-green-600', 'text-indigo-600');
+            modalTitle.classList.add('text-red-600');
+            restartButton.classList.remove('hidden');
+            
+            messageModal.classList.add('hidden');
+            messageModal.classList.remove('flex');
+            pauseMessage.classList.add('hidden');
+            
+            // Re-enable buttons
+            document.querySelectorAll('.coping-button').forEach(btn => btn.disabled = false);
+
+            updateStressBar();
+
+            // Clear existing intervals and start new ones
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(addNewStressor, STRESSOR_INTERVAL_MS);
+
+            if (winTimeout) clearTimeout(winTimeout);
+            // Start win timer (60 seconds)
+            winTimerStart = Date.now();
+            winTimeout = setTimeout(gameWin, 60000); 
+        }
+
+        // --- Event Listeners and Initialization ---
+
+        copingContainer.addEventListener('click', (event) => {
+            const button = event.target.closest('.coping-button');
+            if (!button || button.disabled) return;
+
+            const relief = parseInt(button.dataset.relief);
+            const cooldownSeconds = parseInt(button.dataset.cooldown);
+
+            // 1. Check for Resume condition first
+            // Check if the game was paused AND stress will drop below max stress after relief.
+            const wasPausedAtMaxStress = (gameInterval === null && currentStress === MAX_STRESS);
+            const willResume = wasPausedAtMaxStress && (currentStress - relief < MAX_STRESS);
+
+            // 2. Apply Stress Relief
+            currentStress -= relief;
+            
+            // 3. Update the visual bar
+            updateStressBar(); 
+
+            // 4. Start Cooldown
+            startCooldown(button, cooldownSeconds);
+            
+            // 5. If successful destress from 100%, resume the game
+            if (willResume) {
+                resumeGame();
+            }
+        });
+
+        /**
+         * Starts the cooldown timer for a button.
+         * @param {HTMLElement} button - The button element.
+         * @param {number} duration - Cooldown duration in seconds.
+         */
+        function startCooldown(button, duration) {
+            button.disabled = true;
+            
+            // Get the original text
+            const cooldownText = button.textContent;
+            
+            // Wait for the duration (in milliseconds) and then re-enable
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = cooldownText; // Restore original text
+            }, duration * 1000); // Convert seconds to milliseconds
+        }
+
+        // Restart button listener
+        restartButton.addEventListener('click', startGame);
+
+
+        // Start the game when the window loads
+        window.onload = startGame;
+
+    </script>
+</body>
+</html>
