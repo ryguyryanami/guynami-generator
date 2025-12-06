@@ -1,42 +1,105 @@
-<script>
-const verses = [
-    "Our Father, who art in heaven, hallowed be Thy name.",
-    "Thy kingdom come, Thy will be done, on earth as it is in heaven.",
-    "Give us this day our daily bread.",
-    "And forgive us our trespasses, as we forgive those who trespass against us.",
-    "And lead us not into temptation,",
-    "But deliver us from evil.",
-    "For thine is the kingdom, and the power, and the glory, forever. Amen."
-];
-
-function startMeditation() {
-    const audio = document.getElementById("song");
-    const verseBox = document.getElementById("verse");
-
-    // Force load
-    audio.load();
-
-    audio.play().catch(err => {
-        console.log("Audio blocked or not found:", err);
-        alert("Audio could not play. Check that give_us_this_day.mp3 is in the same folder.");
-    });
-
-    let i = 0;
-    const intervalTime = 100000 / verses.length; // 100 sec total
-
-    function showVerse() {
-        verseBox.style.opacity = 0;
-        setTimeout(() => {
-            verseBox.textContent = verses[i];
-            verseBox.style.opacity = 1;
-        }, 1000);
-
-        i++;
-        if (i < verses.length) {
-            setTimeout(showVerse, intervalTime);
-        }
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Meditation Player</title>
+<style>
+    body {
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 40px;
     }
 
-    showVerse();
+    #playBtn {
+        padding: 14px 24px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    #visualizer {
+        margin: 40px auto;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #666, #111);
+        animation: pulse 3s infinite ease-in-out;
+        display: none;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.3); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    #verse {
+        margin-top: 40px;
+        font-size: 28px;
+        line-height: 1.4;
+        display: none;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+</head>
+<body>
+
+<button id="playBtn">
+    ▶ Play Meditation
+    <audio id="audio" src="/.give_us_this_day.mp3"></audio>
+</button>
+
+<div id="visualizer"></div>
+<div id="verse"></div>
+
+<script>
+const verses = [
+    "Our Father, who art in heaven,",
+    "Hallowed be thy name.",
+    "Thy kingdom come.",
+    "Thy will be done on Earth as it is in heaven.",
+    "Give us this day our daily bread,",
+    "And forgive us our trespasses,",
+    "As we forgive those who trespass against us.",
+    "And lead us not into temptation,",
+    "But deliver us from evil.",
+    "For thine is the kingdom, the power, and the glory,",
+    "Forever and ever. Amen."
+];
+
+const totalTime = 100000; // 1m40s
+const verseTime = totalTime / verses.length;
+
+const playBtn = document.getElementById("playBtn");
+const audio = document.getElementById("audio");
+const visualizer = document.getElementById("visualizer");
+const verseBox = document.getElementById("verse");
+
+playBtn.addEventListener("click", () => {
+    audio.play(); // This WILL work because it's triggered by clicking THE BUTTON THAT CONTAINS THE AUDIO
+    playBtn.style.display = "none";
+    visualizer.style.display = "block";
+    verseBox.style.display = "block";
+    startVerses();
+});
+
+function startVerses() {
+    let index = 0;
+    verseBox.innerHTML = verses[index];
+
+    const interval = setInterval(() => {
+        index++;
+        if (index >= verses.length) {
+            clearInterval(interval);
+            return;
+        }
+        verseBox.innerHTML = verses[index];
+    }, verseTime);
 }
 </script>
+
+</body>
+</html>
