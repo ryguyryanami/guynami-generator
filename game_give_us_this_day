@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Give Us This Day - Prayer Meditation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tone.js CDN for background music -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body {
+            background-color: #0d121c; /* Deep space blue/black */
+        }
+        #visualizationContainer {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        #equalizerCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Overlay for the Prayer Text */
+        #textOverlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through to canvas if needed */
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .verse-text {
+            font-family: 'Times New Roman', serif;
+            font-size: 2.5rem;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 255, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 2s ease-in-out, transform 2s ease-out;
+            max-width: 800px;
+        }
+
+        .verse-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Style for the initial click overlay */
+        #startScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            cursor: default;
+            backdrop-filter: blur(10px);
+            background-color: rgba(13, 18, 28, 0.95);
+            display: flex;
+            flex-col: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease;
+        }
+
+        /* Progress Bar */
+        #progressBarContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 20;
+        }
+        #progressBar {
+            height: 100%;
+            background: #06b6d4; /* Cyan-500 */
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen font-sans overflow-hidden">
+
+    <!-- Visualization Background -->
+    <div id="visualizationContainer">
+        <canvas id="equalizerCanvas"></canvas>
+    </div>
+
+    <!-- Prayer Text Overlay -->
+    <div id="textOverlay">
+        <h1 id="verseDisplay" class="verse-text"></h1>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="startScreen">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 text-cyan-400">
+            Give Us This Day
+        </h1>
+        <p class="text-xl text-gray-300 mb-10 max-w-sm text-center italic">
+            A guided meditation on the Lord's Prayer.
+        </p>
+        
+        <div class="flex flex-col gap-4 items-center">
+            <button id="playButton" class="px-10 py-4 bg-cyan-600 hover:bg-cyan-700 rounded-full text-xl font-bold shadow-[0_0_20px_rgba(8,145,178,0.5)] transition duration-300 transform hover:scale-105 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Start Meditation
+            </button>
+            <p class="text-sm text-gray-500 mt-2">Duration: 1 min 40 sec</p>
+        </div>
+    </div>
+
+    <script>
+        // *** CONFIGURATION ***
+        // REPLACE THIS STRING WITH YOUR AUDIO FILE URL
+        // Example: 'audio/prayer.mp3' or 'https://mysite.com/song.wav'
+        const AUDIO_URL = 'give_us_this_day.wav'; 
+        
+        const TOTAL_DURATION_SEC = 100; // 1 minute 40 seconds
+        
+        const VERSES = [
+            "Our Father, who art in heaven,\nhallowed be thy name.",
+            "Thy kingdom come,\nthy will be done,\non earth as it is in heaven.",
+            "Give us this day\nour daily bread.",
+            "And forgive us our trespasses,\nas we forgive those\nwho trespass against us.",
+            "And lead us not into temptation,\nbut deliver us from evil.",
+            "For thine is the kingdom,\nand the power, and the glory,\nforever. Amen."
+        ];
+
+        // *** ELEMENTS ***
+        const startScreen = document.getElementById('startScreen');
+        const playButton = document.getElementById('playButton');
+        const canvas = document.getElementById('equalizerCanvas');
+        const ctx = canvas.getContext('2d');
+        const verseDisplay = document.getElementById('verseDisplay');
+        const progressBar = document.getElementById('progressBar');
+
+        // *** STATE ***
+        let audioPlayer = null;
+        let analyser = null;
+        let frequencyData = null;
+        let animationId = null;
+        let startTime = 0;
+        let isPlaying = false;
+
+        /**
+         * Setup Tone.js Player and Analyser
+         */
+        async function setupAudio() {
+            await Tone.start();
+
+            if (!AUDIO_URL) {
+                alert("Please edit the HTML file and set the AUDIO_URL variable to your audio file path.");
+                return false;
+            }
+
+            // Create Player
+            return new Promise((resolve, reject) => {
+                const player = new Tone.Player({
+                    url: AUDIO_URL,
+                    loop: false,
+                    autostart: false,
+                    onload: () => {
+                        resolve(player);
+                    },
+                    onerror: (e) => {
+                        console.error("Error loading audio:", e);
+                        alert("Could not load audio file. Check the URL in the code.");
+                        reject(e);
+                    }
+                }).toDestination();
+
+                // Create Analyser
+                analyser = new Tone.Analyser('fft', 64);
+                analyser.smoothing = 0.85;
+                player.connect(analyser);
+                frequencyData = new Uint8Array(analyser.frequencyBinCount);
+            });
+        }
+
+        /**
+         * Main Visualization Loop
+         */
+        function loop() {
+            animationId = requestAnimationFrame(loop);
+
+            if (!isPlaying) return;
+
+            // 1. Draw Visualizer
+            drawVisualizer();
+
+            // 2. Manage Text Timing
+            const elapsed = (Date.now() - startTime) / 1000; // in seconds
+            updateVerse(elapsed);
+            updateProgressBar(elapsed);
+
+            // Stop if duration exceeded
+            if (elapsed > TOTAL_DURATION_SEC + 5) { // +5s buffer for fade out
+                stopMeditation();
+            }
+        }
+
+        /**
+         * Update the displayed verse based on elapsed time
+         */
+        function updateVerse(elapsed) {
+            const segmentDuration = TOTAL_DURATION_SEC / VERSES.length;
+            const currentIndex = Math.floor(elapsed / segmentDuration);
+
+            // If we are within the verses array
+            if (currentIndex >= 0 && currentIndex < VERSES.length) {
+                const text = VERSES[currentIndex];
+                
+                // Only update DOM if text changes
+                if (verseDisplay.innerText !== text) {
+                    // Fade out
+                    verseDisplay.classList.remove('verse-active');
+                    
+                    // Wait for fade out, then swap text and fade in
+                    setTimeout(() => {
+                        if (!isPlaying) return;
+                        verseDisplay.innerText = text;
+                        verseDisplay.classList.add('verse-active');
+                    }, 500); // Small overlap for smooth transition
+                }
+            } else if (currentIndex >= VERSES.length) {
+                // End state
+                verseDisplay.classList.remove('verse-active');
+            }
+        }
+
+        function updateProgressBar(elapsed) {
+            const pct = Math.min((elapsed / TOTAL_DURATION_SEC) * 100, 100);
+            progressBar.style.width = `${pct}%`;
+        }
+
+        function drawVisualizer() {
+            if (!analyser) return;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+
+            analyser.getByteFrequencyData(frequencyData);
+            const barCount = frequencyData.length / 2; // Use lower half of spectrum for cleaner look
+            const barWidth = width / barCount;
+
+            for (let i = 0; i < barCount; i++) {
+                const value = frequencyData[i];
+                const percent = value / 255;
+                const barHeight = height * percent * 0.8;
+                
+                // Center the bars vertically
+                const y = (height - barHeight) / 2;
+
+                // Gradient
+                const hue = 180 + (percent * 60); // Cyan to Blue range
+                ctx.fillStyle = `hsla(${hue}, 80%, 60%, 0.8)`;
+                
+                // Draw mirrored bars
+                ctx.fillRect(i * barWidth, y, barWidth - 2, barHeight);
+            }
+        }
+
+        function stopMeditation() {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            if (audioPlayer) audioPlayer.stop();
+            verseDisplay.classList.remove('verse-active');
+            
+            // Show start screen again after a moment
+            setTimeout(() => {
+                startScreen.classList.remove('hidden');
+                startScreen.style.opacity = '1';
+                startScreen.style.pointerEvents = 'auto';
+            }, 3000);
+        }
+
+        // --- Handling Resize ---
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- Initialization ---
+        playButton.addEventListener('click', async () => {
+            playButton.textContent = "Loading Audio...";
+            playButton.disabled = true;
+            playButton.classList.add('opacity-50');
+
+            try {
+                // Initialize Audio
+                audioPlayer = await setupAudio();
+                
+                // Start Playback
+                audioPlayer.start();
+                startTime = Date.now();
+                isPlaying = true;
+
+                // UI Transition
+                startScreen.style.opacity = '0';
+                startScreen.style.pointerEvents = 'none';
+                
+                // Start Loop
+                loop();
+
+                // Initial Verse Trigger
+                setTimeout(() => {
+                    verseDisplay.innerText = VERSES[0];
+                    verseDisplay.classList.add('verse-active');
+                }, 500);
+
+            } catch (err) {
+                // Reset UI on error
+                playButton.textContent = "Start Meditation";
+                playButton.disabled = false;
+                playButton.classList.remove('opacity-50');
+            }
+        });
+
+    </script>
+</body>
+</html>
