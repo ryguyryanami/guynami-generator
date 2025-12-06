@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Path of Peace: The Long Beach Saga</title>
+    <style>
+        /* --- CORE VISUALS --- */
+        :root {
+            --primary-blue: #005f73;
+            --deep-ocean: #0a9396;
+            --sunset-orange: #ae2012;
+            --sand-beige: #e9d8a6;
+            --night-sky: #001219;
+            --text-main: #2b2d42;
+            --bg-offwhite: #fdfcdc;
+        }
+
+        body {
+            font-family: 'Georgia', 'Cambria', serif;
+            background-color: #f0f2f5;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM32 63c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm57-13c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        #game-container {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- THE HEADER / SCENE DISPLAY --- */
+        #scene-display {
+            height: 320px;
+            background: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            transition: background 1.5s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #scene-icon {
+            font-size: 6rem;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.4));
+            animation: float 6s ease-in-out infinite;
+            z-index: 2;
+            margin-bottom: 15px;
+        }
+
+        #location-title {
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            z-index: 2;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin: 0;
+        }
+
+        #chapter-marker {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.4);
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- CONTENT AREA --- */
+        .content-area {
+            padding: 40px 50px;
+        }
+
+        #story-text {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            color: #2b2d42;
+            border-left: 4px solid #ddd;
+            padding-left: 20px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        button {
+            background-color: #f8f9fa;
+            color: #444;
+            border: 1px solid #e1e4e8;
+            padding: 24px 30px;
+            border-radius: 0;
+            font-size: 1.05rem;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        button:hover {
+            background-color: #fff;
+            border-color: #bbb;
+            transform: translateX(8px);
+            box-shadow: -5px 5px 15px rgba(0,0,0,0.05);
+            color: #000;
+            z-index: 10;
+        }
+
+        button::after {
+            content: '→';
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover::after {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        /* --- PATH STYLING --- */
+        /* Each path has a distinct colored border */
+        button.path-money { border-left: 6px solid #2a9d8f; }
+        button.path-money:hover { background-color: #eafbf9; }
+
+        button.path-fame { border-left: 6px solid #9b5de5; }
+        button.path-fame:hover { background-color: #f3e5ff; }
+
+        button.path-power { border-left: 6px solid #e63946; }
+        button.path-power:hover { background-color: #ffe6e6; }
+
+        button.path-romance { border-left: 6px solid #f15bb5; }
+        button.path-romance:hover { background-color: #ffe6f5; }
+
+        button.path-religion { border-left: 6px solid #fb8500; }
+        button.path-religion:hover { background-color: #fff5e6; }
+
+        button.path-drug { border-left: 6px solid #343a40; }
+        button.path-drug:hover { background-color: #e9ecef; }
+
+        button.path-cons { border-left: 6px solid #7f1d1d; } /* Deep Red */
+        button.path-cons:hover { background-color: #fef2f2; }
+
+        button.path-lib { border-left: 6px solid #1e3a8a; } /* Deep Blue */
+        button.path-lib:hover { background-color: #eff6ff; }
+
+        button.restart {
+            background-color: #333;
+            color: white;
+            border: none;
+            justify-content: center;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        button.restart::after { content: ''; } 
+
+        /* --- ANIMATION UTILS --- */
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        #status-bar {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .content-area { padding: 20px; }
+            #scene-display { height: 220px; }
+            #scene-icon { font-size: 4rem; }
+            #location-title { font-size: 1.5rem; }
+            #story-text { font-size: 1.1rem; }
+            button { padding: 15px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="scene-display">
+            <div id="chapter-marker">Prologue</div>
+            <div id="scene-icon">🌊</div>
+            <h2 id="location-title">Long Beach</h2>
+        </div>
+
+        <div class="content-area">
+            <div id="story-text">Initializing simulation...</div>
+            <div id="option-buttons" class="btn-grid"></div>
+            <div id="status-bar">System Ready</div>
+        </div>
+    </div>
+
+    <script>
+        // --- THE NARRATIVE ENGINE ---
+        // Over 1000 lines of narrative logic and state management.
+        
+        const textNodes = [
+            // =========================================================================
+            // SCENE 1: THE ARRIVAL (The central hub)
+            // =========================================================================
+            {
+                id: 1,
+                text: "The Pacific Surfliner hisses to a halt at the downtown station. You step onto the platform, shielding your eyes from the relentless Southern California sun. <br><br>The air here is a complex layering of scents: the sharp brine of the Pacific Ocean, the heavy diesel of container ships, and the faint, sugary smell of churros from a nearby stand. You adjust the heavy duffel bag on your shoulder. It’s labeled <strong>'The Past'</strong>, and it feels heavier today than ever.<br><br>You stand at the intersection of a dozen potential lives. Your phone buzzes in your pocket, demanding attention.",
+                bg: "linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)",
+                icon: "⚓",
+                location: "Transit Mall",
+                chapter: "Arrival",
+                options: [
+                    { text: "Check your stock portfolio. If you can't control your past, you can at least control your net worth.", nextText: 20, style: "path-money" },
+                    { text: "Doomscroll the news. The world is changing too fast, and you need to know who is to blame.", nextText: 180, style: "path-cons" },
+                    { text: "Check social media. You need to express your outrage about the state of the world immediately.", nextText: 200, style: "path-lib" },
+                    { text: "Look for a contact. You need something chemical to take the edge off this anxiety.", nextText: 140, style: "path-drug" },
+                    { text: "Livestream your arrival. If you don't document it, did it even happen?", nextText: 40, style: "path-fame" }, 
+                    { text: "Drop the heavy bag in the nearest trash can. You are here to breathe.", nextText: 2 } 
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF PEACE: The Main Thread (Integration & Connection)
+            // =========================================================================
+            {
+                id: 2,
+                text: "You unclasp the bag. It hits the bottom of the metal bin with a heavy thud. Immediately, your shoulders straighten. A physical weight has lifted. You take a deep breath, actually tasting the salt in the air for the first time.<br><br>You wander north towards Anaheim Street, entering the heart of 'Cambodia Town'. The architecture shifts. The smell of lemongrass, galangal, and pungent fish sauce fills the air. It is bustling, loud, and you are clearly an outsider.",
+                bg: "linear-gradient(to right, #f83600 0%, #f9d423 100%)",
+                icon: "🍜",
+                location: "Cambodia Town",
+                chapter: "The Stranger",
+                options: [
+                    { text: "Feel a wave of social anxiety and retreat to more familiar territory.", nextText: 3 },
+                    { text: "Sit at a plastic table, point to a bowl of soup you don't recognize, and smile at the owner.", nextText: 160 },
+                    { text: "Look at the real estate potential. This neighborhood is ripe for redevelopment.", nextText: 20, style: "path-money" }
+                ]
+            },
+            {
+                id: 160,
+                text: "The owner, an older woman with kind eyes and deep laugh lines, places a steaming bowl of *Kuy Teav* in front of you. You don't share a language, but when you taste the rich broth and look up in delight, she laughs warmly and pats your shoulder.<br><br>In that fleeting moment, the barriers of culture dissolve. You realize you aren't just an observer in this city; you are part of its fabric.",
+                bg: "linear-gradient(to top, #96fbc4 0%, #f9f586 100%)",
+                icon: "🤝",
+                location: "Noodle Stall",
+                chapter: "Connection",
+                options: [
+                    { text: "Thank her (Akun) and continue your walk, feeling deeply nourished.", nextText: 3 }
+                ]
+            },
+            {
+                id: 3,
+                text: "You make your way to the Downtown Waterfront. The Aquarium of the Pacific glimmers like a fish scale in the sun. Tourists swarm the area, eating ice cream and taking selfies. To your right, the ghostly silhouette of the Queen Mary floats in the harbor.<br><br>The sheer scale of humanity here is overwhelming.",
+                bg: "linear-gradient(to bottom, #00c6ff, #0072ff)",
+                icon: "🐬",
+                location: "The Waterfront",
+                chapter: "The Crowd",
+                options: [
+                    { text: "Grumble about the parking prices and the noise. It used to be quieter here.", nextText: 181, style: "path-cons" },
+                    { text: "Critique the morality of keeping marine life in tanks for entertainment.", nextText: 201, style: "path-lib" },
+                    { text: "Watch a seal glide through the water and let yourself feel simple joy.", nextText: 4 }
+                ]
+            },
+            {
+                id: 4,
+                text: "You walk west, crossing the LA River bike path into the Westside. It's a working-class neighborhood. Banda music bumps from passing cars. In a park, a large family is having a Carne Asada. The smoke smells incredible.<br><br>An elderly woman notices you watching. She waves you over and offers you a paper plate with a taco and grilled onions.",
+                bg: "linear-gradient(to bottom, #d35400, #f39c12)",
+                icon: "🌮",
+                location: "Westside Park",
+                chapter: "Generosity",
+                options: [
+                    { text: "Politely refuse. You can't trust food from strangers, and it's probably not organic.", nextText: 101 }, 
+                    { text: "Accept the plate with both hands, sit on the grass, and listen to their stories.", nextText: 5 }
+                ]
+            },
+            {
+                id: 5,
+                text: "Full and happy, you reach the Belmont Pier as the sun begins to set. The sky is a bruised purple and orange. <br><br>Near the railing, a tourist is frantically turning a map upside down, looking on the verge of tears. They clearly don't speak English and seem completely lost.",
+                bg: "linear-gradient(to bottom, #000428, #004e92)",
+                icon: "🗺️",
+                location: "Belmont Pier",
+                chapter: "The Test",
+                options: [
+                    { text: "Walk past. Not your problem. You're on a journey of self-discovery.", nextText: 101 },
+                    { text: "Stop, smile, and use gestures to help them find their way.", nextText: 100 } // WIN
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF THE CONSERVATIVE VICTIM ("The Patriot")
+            // =========================================================================
+            {
+                id: 180,
+                text: "You stare at the news on your phone. Another regulation passed. Another tradition renamed. You feel like the ground is shifting beneath your feet, and nobody cares.<br><br>You head to Belmont Shore, hoping for some normalcy, but all you see are changes. You feel like a stranger in your own country.",
+                bg: "linear-gradient(to bottom, #870000, #190A05)",
+                icon: "🐘",
+                location: "Belmont Shore",
+                chapter: "Alienation",
+                options: [
+                    { text: "Loudly complain to the barista that a black coffee shouldn't cost five dollars.", nextText: 181, style: "path-cons" },
+                    { text: "Head to a community meeting about 'Recalling the City Council'.", nextText: 182, style: "path-cons" },
+                    { text: "Realize that your anger is exhausting you and put the phone away.", nextText: 3 }
+                ]
+            },
+            {
+                id: 181,
+                text: "The barista rolls their eyes at you. You feel the heat rise in your neck. It's not about the coffee; it's about the principle. You feel disrespected.<br><br>You storm out and head to a bar in Naples, looking for people who 'get it'.",
+                bg: "linear-gradient(to right, #b92b27, #150000)",
+                icon: "🍺",
+                location: "Naples Bar",
+                chapter: "Resentment",
+                options: [
+                    { text: "Find a group at the bar and rant about how the city is going to hell.", nextText: 183, style: "path-cons" },
+                    { text: "Pick a fight with a college student who looks 'too woke'.", nextText: 184, style: "path-cons" }
+                ]
+            },
+            {
+                id: 184,
+                text: "You get into a shouting match. The bouncer throws you out. You stand on the sidewalk, humiliated and furious. You feel like the victim of a system that hates you.",
+                bg: "linear-gradient(to bottom, #222, #000)",
+                icon: "🚪",
+                location: "The Street",
+                chapter: "Ejection",
+                options: [
+                    { text: "Go home and brood.", nextText: 186, style: "path-cons" },
+                    { text: "Walk it off and try to calm down.", nextText: 4 }
+                ]
+            },
+            {
+                id: 182,
+                text: "The meeting hall is packed with angry people. They show charts about crime and how the Port is bringing in 'outsiders'. The fear in the room is palpable and contagious.<br><br>A man in a suit points at you. 'You look like someone who wants to take their city back,' he says.",
+                bg: "linear-gradient(to bottom, #2c3e50, #4ca1af)",
+                icon: "🗳️",
+                location: "Town Hall",
+                chapter: "Radicalization",
+                options: [
+                    { text: "Agree to run for office on a 'Law and Order' platform.", nextText: 64, style: "path-power" },
+                    { text: "Go home and start a blog exposing the 'conspiracies' running the city.", nextText: 185, style: "path-cons" }
+                ]
+            },
+            {
+                id: 185,
+                text: "You spend all night writing. You connect dots that aren't there. You feel like a warrior for truth, but your family has stopped calling you.",
+                bg: "linear-gradient(to bottom, #111, #222)",
+                icon: "💻",
+                location: "Home Office",
+                chapter: "The Manifesto",
+                options: [
+                    { text: "Keep writing. They need to know!", nextText: 107 },
+                    { text: "Delete the draft and go outside.", nextText: 5 }
+                ]
+            },
+            {
+                id: 183,
+                text: "You spend hours buying rounds for people who agree with you. You talk about the 'good old days'—a time that, in retrospect, maybe wasn't that great for everyone, but it was great for you.<br><br>By the end of the night, you feel validated, but also deeply angry.",
+                bg: "linear-gradient(to bottom, #444, #222)",
+                icon: "🗣️",
+                location: "Echo Chamber",
+                chapter: "Nostalgia",
+                options: [
+                    { text: "Cut off contact with your family members who disagree with you.", nextText: 186, style: "path-cons" },
+                    { text: "Look in the mirror in the bathroom and wonder why you are so unhappy.", nextText: 4 }
+                ]
+            },
+            {
+                id: 186,
+                text: "Months pass. You sit alone in a nice house. The TV is on 24/7, feeding you a stream of outrage. You have pushed everyone away to protect your worldview.<br><br>You are 'right', but you are completely alone.",
+                bg: "linear-gradient(to bottom, #000000, #434343)",
+                icon: "📺",
+                location: "Living Room",
+                chapter: "The Fortress",
+                options: [
+                    { text: "Blame society for isolating you.", nextText: 107 }, // Cons Failure
+                    { text: "Turn off the TV, go outside, and touch the grass.", nextText: 5 }
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF THE LIBERAL VICTIM ("The Activist")
+            // =========================================================================
+            {
+                id: 200,
+                text: "You see a news headline that physically hurts you. You feel the weight of global injustice pressing down on your shoulders specifically. It feels like nobody else cares as much as you do.<br><br>You head to 'Retro Row' on 4th Street to be around your peers.",
+                bg: "linear-gradient(to bottom, #1a2980, #26d0ce)",
+                icon: "☕",
+                location: "Retro Row",
+                chapter: "The Burden",
+                options: [
+                    { text: "Lecture the barista on the ethics of their bean sourcing.", nextText: 201, style: "path-lib" },
+                    { text: "Post a long thread about how the traffic noise is triggering your trauma.", nextText: 202, style: "path-lib" },
+                    { text: "Quietly volunteer at the local animal shelter without telling anyone.", nextText: 4 } 
+                ]
+            },
+            {
+                id: 201,
+                text: "You caused a scene. You felt righteous doing it, but the barista looked exhausted, not educated. The people in line rolled their eyes.<br><br>You sit down, feeling persecuted for simply trying to make the world better.",
+                bg: "linear-gradient(to right, #000428, #004e92)",
+                icon: "🙄",
+                location: "Coffee Shop",
+                chapter: "Superiority",
+                options: [
+                    { text: "Block your best friend online because they didn't retweet your thread.", nextText: 203, style: "path-lib" },
+                    { text: "Head to the university to join a protest, regardless of what it's about.", nextText: 204, style: "path-lib" }
+                ]
+            },
+            {
+                id: 204,
+                text: "You join a protest at CSULB. You shout slogans you don't fully understand. You feel part of something, but mostly you feel angry at the people walking by who aren't marching.",
+                bg: "linear-gradient(to bottom, #ff0000, #000000)",
+                icon: "📢",
+                location: "CSULB Campus",
+                chapter: "The Protest",
+                options: [
+                    { text: "Scream at a student who is just trying to get to class.", nextText: 205, style: "path-lib" },
+                    { text: "Realize you don't know what you are yelling about.", nextText: 222 }
+                ]
+            },
+            {
+                id: 202,
+                text: "Your post went viral. The dopamine hit is incredible. Strangers are praising your 'bravery' and 'vulnerability'. You feel seen.<br><br>But deep down, you know you haven't actually fixed the traffic or helped anyone.",
+                bg: "linear-gradient(to right, #8e44ad, #3498db)",
+                icon: "📱",
+                location: "The Feed",
+                chapter: "Performance",
+                options: [
+                    { text: "Start a crowdfunding campaign for your 'emotional labor'.", nextText: 26, style: "path-money" },
+                    { text: "Publicly attack a rival activist to prove you are more pure than they are.", nextText: 205, style: "path-lib" }
+                ]
+            },
+            {
+                id: 203,
+                text: "You cut off your friend. Your circle is getting smaller. You have to walk on eggshells to avoid being cancelled yourself. It is exhausting performing goodness all the time.",
+                bg: "linear-gradient(to bottom, #232526, #414345)",
+                icon: "🥚",
+                location: "Safe Space",
+                chapter: "Puritanism",
+                options: [
+                    { text: "Double down. Everyone else is the problem.", nextText: 205, style: "path-lib" },
+                    { text: "Call your friend and apologize.", nextText: 5 }
+                ]
+            },
+            {
+                id: 205,
+                text: "Your life has become a minefield. You are constantly scanning for threats, for micro-aggressions, for reasons to be upset. You have built an identity around being a victim.<br><br>You are safe in your bubble, but you are miserable.",
+                bg: "linear-gradient(to bottom, #111, #333)",
+                icon: "😫",
+                location: "Mental Prison",
+                chapter: "Paralysis",
+                options: [
+                    { text: "Decide that the world is too broken to participate in.", nextText: 108 }, // Lib Failure
+                    { text: "Go to the park and share a taco with a stranger.", nextText: 4 }
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF THE PORT (Real Power / Industry)
+            // =========================================================================
+            {
+                id: 220,
+                text: "You wander down to the Port of Long Beach. It is a landscape of giants. Massive cranes lift containers the size of houses. Ships from China, Rotterdam, and Panama sit low in the water.<br><br>Here, the culture wars feel small. This is the engine of the world. It is loud, dangerous, and unapologetically about commerce.",
+                bg: "linear-gradient(to bottom, #2c3e50, #bdc3c7)",
+                icon: "🏗️",
+                location: "Terminal Island",
+                chapter: "The Machine",
+                options: [
+                    { text: "Marvel at the sheer scale of global trade.", nextText: 221 },
+                    { text: "Notice a gap in security. You could smuggle something through here.", nextText: 145, style: "path-drug" },
+                    { text: "Try to talk to the workers about unionizing.", nextText: 222, style: "path-lib" }
+                ]
+            },
+            {
+                id: 221,
+                text: "You realize that while people argue on the internet, this machine keeps turning. Money is the only language spoken here, and it speaks loudly.<br><br>You feel a cold ambition rising in your chest.",
+                bg: "linear-gradient(to bottom, #780206, #061161)",
+                icon: "🌐",
+                location: "The Docks",
+                chapter: "Ambition",
+                options: [
+                    { text: "Leverage your connections to become a logistics tycoon.", nextText: 21, style: "path-money" },
+                    { text: "Realize you are just a cog and walk to the water's edge.", nextText: 223 }
+                ]
+            },
+            {
+                id: 222,
+                text: "You approach a group of longshoremen. They have grease on their hands and exhaustion in their eyes. You start using academic theories to explain their exploitation.<br><br>They laugh at you. Not unkindly, but dismissively. 'Kid, we just want to finish the shift,' one says.",
+                bg: "linear-gradient(to bottom, #4b6cb7, #182848)",
+                icon: "👷",
+                location: "Union Hall",
+                chapter: "Reality Check",
+                options: [
+                    { text: "Shut up, listen, and learn about their actual lives.", nextText: 4 },
+                    { text: "Go home and write a blog post about how they have 'false consciousness'.", nextText: 201, style: "path-lib" }
+                ]
+            },
+            {
+                id: 223,
+                text: "You stand at Pier J, looking out at the dark water. The ocean doesn't care about your money, your politics, or your followers. It is vast and indifferent.<br><br>In that indifference, you find a strange kind of peace.",
+                bg: "linear-gradient(to bottom, #000000, #0f9b0f)",
+                icon: "🌌",
+                location: "Pier J",
+                chapter: "Humility",
+                options: [
+                    { text: "Accept your smallness in the universe.", nextText: 5 },
+                    { text: "Let the darkness call to you.", nextText: 102 }
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF INDULGENCE (Drugs / Crime)
+            // =========================================================================
+            {
+                id: 140,
+                text: "You find a contact in a dimly lit alley behind a Pine Avenue club. The bass from the club vibrates in your chest. The dealer offers you a small bag of white powder.<br><br>'This will make you the king of this city,' he whispers.",
+                bg: "linear-gradient(to bottom, #000000, #434343)",
+                icon: "❄️",
+                location: "Dark Alley",
+                chapter: "The Precipice",
+                options: [
+                    { text: "Buy it. You need the energy to compete.", nextText: 141, style: "path-drug" },
+                    { text: "Realize this is a cliché you don't want to live and walk away.", nextText: 2 }
+                ]
+            },
+            {
+                id: 141,
+                text: "You take the hit in a bathroom stall. The chemical drip hits the back of your throat. Suddenly, your heart is a jackhammer. You feel invincible. You feel like a god.<br><br>You burst onto the dance floor.",
+                bg: "linear-gradient(to right, #FF0099, #493240)",
+                icon: "⚡",
+                location: "Nightclub",
+                chapter: "Ascension",
+                options: [
+                    { text: "Order bottle service. Keep the party going forever!", nextText: 142, style: "path-drug" },
+                    { text: "Use your manic confidence to hit on everyone in sight.", nextText: 80, style: "path-romance" }
+                ]
+            },
+            {
+                id: 142,
+                text: "6:00 AM. The sun is coming up over the marina. The birds are screaming. You are sitting on a curb, shaking. The comedown is a physical weight crushing your skull.<br><br>You would do anything to stop this feeling.",
+                bg: "linear-gradient(to bottom, #870000, #190A05)",
+                icon: "📉",
+                location: "The Curb",
+                chapter: "The Crash",
+                options: [
+                    { text: "Call the dealer. You just need a little more to normalize.", nextText: 143, style: "path-drug" },
+                    { text: "Go home, lock the door, and try to sleep for two days.", nextText: 144 }
+                ]
+            },
+            {
+                id: 144,
+                text: "You wake up two days later. You are dehydrated, depressed, and your phone has 50 missed calls. You feel hollow.",
+                bg: "linear-gradient(to bottom, #333, #555)",
+                icon: "🛏️",
+                location: "Bedroom",
+                chapter: "The Void",
+                options: [
+                    { text: "Go back to the dealer. You can't handle this feeling.", nextText: 143, style: "path-drug" },
+                    { text: "Take a shower, drink water, and try to restart.", nextText: 2 }
+                ]
+            },
+            {
+                id: 143,
+                text: "Weeks blur. You are spending your rent money on coke. You've stopped showing up for work. Your friends have stopped calling.<br><br>You are thin, paranoid, and electric with bad energy.",
+                bg: "linear-gradient(to bottom, #232526, #414345)",
+                icon: "💀",
+                location: "Empty Apartment",
+                chapter: "Spiral",
+                options: [
+                    { text: "Sell your furniture and electronics for cash.", nextText: 145, style: "path-drug" },
+                    { text: "Admit defeat and call a helpline.", nextText: 146 }
+                ]
+            },
+            {
+                id: 145,
+                text: "You are in debt to the cartel operating out of the Port. They don't want your money anymore; they want a favor. They hand you a backpack.<br><br>'Drive this to San Diego. Don't look inside.'",
+                bg: "linear-gradient(to bottom, #000000, #ff0000)",
+                icon: "📦",
+                location: "The Underworld",
+                chapter: "Trapped",
+                options: [
+                    { text: "Do the run. You have no choice.", nextText: 147 },
+                    { text: "Steal the package and run.", nextText: 148 }
+                ]
+            },
+            {
+                id: 146,
+                text: "Rehab is the hardest thing you've ever done. It is vomiting, shaking, and crying in a room with strangers. But on the fourth day, you eat an apple and it tastes real.",
+                bg: "linear-gradient(to bottom, #E6DADA, #274046)",
+                icon: "🏥",
+                location: "Recovery Center",
+                chapter: "Healing",
+                options: [{ text: "Commit to the program.", nextText: 149 }]
+            },
+            {
+                id: 147,
+                text: "Blue lights flash in your rearview mirror. You pull over. You know your life is over before the officer even taps on the window.",
+                bg: "linear-gradient(to bottom, #000046, #1CB5E0)",
+                icon: "🚔",
+                location: "Interstate 5",
+                chapter: "Judgment",
+                options: [{ text: "Game Over", nextText: 105, style: "restart" }]
+            },
+            {
+                id: 148,
+                text: "You stole from the cartel. You are high, paranoid, and running. You can never stop running.",
+                bg: "linear-gradient(to bottom, #000, #000)",
+                icon: "🏃",
+                location: "The Highway",
+                chapter: "Fugitive",
+                options: [{ text: "The End", nextText: 102, style: "restart" }]
+            },
+
+            // =========================================================================
+            // PATH OF MONEY (Fortune & Greed)
+            // =========================================================================
+            {
+                id: 20,
+                text: "You walk into the Financial District. The glass buildings reflect your ambition. You meet a young entrepreneur who is pitching a new cryptocurrency based on Long Beach sand.",
+                bg: "linear-gradient(to bottom, #11998e, #38ef7d)",
+                icon: "💰",
+                location: "Financial District",
+                chapter: "Opportunity",
+                options: [
+                    { text: "Invest your life savings in 'SandCoin'.", nextText: 21, style: "path-money" },
+                    { text: "Ignore the hype and open a brick-and-mortar coffee shop.", nextText: 30, style: "path-money" },
+                    { text: "Realize he is a fraud and scam him before he scams you.", nextText: 27, style: "path-money" }
+                ]
+            },
+            {
+                id: 21,
+                text: "It was a bubble, but you timed it perfectly. You are rich. You buy a waterfront mansion on Naples Island with a dock for a yacht you don't know how to sail.",
+                bg: "linear-gradient(to bottom, #FDC830, #F37335)",
+                icon: "🏰",
+                location: "Naples Island",
+                chapter: "The Peak",
+                options: [
+                    { text: "Throw massive parties to fill the silence in the house.", nextText: 140, style: "path-drug" },
+                    { text: "Buy a bigger boat to impress the neighbors you hate.", nextText: 22, style: "path-money" }
+                ]
+            },
+            {
+                id: 22,
+                text: "You are drifting in the marina on a multi-million dollar yacht. You are drinking scotch that costs more than a car. You check your phone; no new messages. You are completely alone on the water.",
+                bg: "linear-gradient(to bottom, #8e9eab, #eef2f3)",
+                icon: "🛥️",
+                location: "The Marina",
+                chapter: "Vacuum",
+                options: [
+                    { text: "Hire 'companionship' for the evening.", nextText: 80, style: "path-romance" },
+                    { text: "Realize you are bored and donate it all.", nextText: 4 }
+                ]
+            },
+            {
+                id: 30,
+                text: "You open 'The Daily Grind'. It's hard work. You are up at 4 AM every day. But you know your customers' names. You feel a sense of honest pride.",
+                bg: "linear-gradient(to right, #D3CCE3, #E9E4F0)",
+                icon: "☕",
+                location: "Coffee Shop",
+                chapter: "Work",
+                options: [
+                    { text: "Expand. Franchise. Crush the competition.", nextText: 21, style: "path-money" },
+                    { text: "Stay small and focus on community.", nextText: 4 }
+                ]
+            },
+            {
+                id: 26,
+                text: "The crowdfunding campaign worked. You have money, but it feels dirty. You traded your trauma for cash.",
+                bg: "linear-gradient(to bottom, #999, #ccc)",
+                icon: "💵",
+                location: "Online Bank",
+                chapter: "Sellout",
+                options: [
+                    { text: "Spend it on luxury goods.", nextText: 21, style: "path-money" },
+                    { text: "Give it to someone who actually needs it.", nextText: 5 }
+                ]
+            },
+            {
+                id: 27,
+                text: "You outsmarted the scammer. You have his money. But now you are looking over your shoulder. You need to clean this cash.",
+                bg: "linear-gradient(to bottom, #333, #d00)",
+                icon: "🧼",
+                location: "Back Office",
+                chapter: "Laundering",
+                options: [
+                    { text: "Buy a cash-only car wash business.", nextText: 28 },
+                    { text: "Flee the country before he finds you.", nextText: 106 }
+                ]
+            },
+            {
+                id: 28,
+                text: "You are running a car wash. It's boring, but it hides the money. You are rich, but you spend your days scrubbing bird poop off sedans.",
+                bg: "linear-gradient(to bottom, #2980b9, #6dd5fa)",
+                icon: "🚗",
+                location: "Car Wash",
+                chapter: "The Grind",
+                options: [
+                    { text: "Accept your fate as a criminal businessman.", nextText: 22 },
+                    { text: "Confess to the police.", nextText: 105 }
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF FAME (Vanity)
+            // =========================================================================
+            {
+                id: 40,
+                text: "You start livestreaming on 2nd Street. You are loud, obnoxious, and entertaining. The view count ticks up: 1k, 10k, 100k. The chat is screaming for you to do something crazier.",
+                bg: "linear-gradient(to right, #8e44ad, #c0392b)",
+                icon: "📱",
+                location: "2nd Street",
+                chapter: "Viral",
+                options: [
+                    { text: "Prank a random pedestrian aggressively.", nextText: 41, style: "path-fame" },
+                    { text: "Pivot to selling cheap merchandise to your fans.", nextText: 20, style: "path-money" },
+                    { text: "Read a mean comment and feel your heart sink.", nextText: 2 }
+                ]
+            },
+            {
+                id: 41,
+                text: "You've been scouted for a reality TV show: 'Long Beach Shore'. The producers sit you down. 'We need drama,' they say. 'We need a villain.'",
+                bg: "linear-gradient(to right, #DA22FF, #9733EE)",
+                icon: "🎥",
+                location: "Studio Set",
+                chapter: "The Contract",
+                options: [
+                    { text: "Betray your best friend on camera for ratings.", nextText: 45, style: "path-fame" },
+                    { text: "Start using stimulants to keep your energy up for filming.", nextText: 140, style: "path-drug" }
+                ]
+            },
+            {
+                id: 45,
+                text: "You are the most famous person in the city, but you can't go to the grocery store without being heckled. The world loves to hate you. You are rich, famous, and terrified.",
+                bg: "linear-gradient(to bottom, #000, #434)",
+                icon: "🤬",
+                location: "Public",
+                chapter: "Infamy",
+                options: [
+                    { text: "Lean into the hate. Become a monster.", nextText: 103 },
+                    { text: "Delete your accounts and disappear.", nextText: 149 }
+                ]
+            },
+
+            // =========================================================================
+            // PATH OF POWER (Politics)
+            // =========================================================================
+            {
+                id: 60,
+                text: "You sit in a leather chair in City Hall. A developer slides a heavy envelope across the desk. 'Just a token of appreciation for the rezoning,' he smiles.",
+                bg: "linear-gradient(to bottom, #870000, #190A05)",
+                icon: "🏛️",
+                location: "City Hall",
+                chapter: "The Deal",
+                options: [
+                    { text: "Take the envelope. It's how the game is played.", nextText: 61, style: "path-power" },
+                    { text: "Call the press and expose him.", nextText: 40, style: "path-fame" },
+                    { text: "Decline and run an honest campaign.", nextText: 64, style: "path-power" }
+                ]
+            },
+            {
+                id: 61,
+                text: "You are the shadow ruler of the Port. You control what comes in and what goes out. The cartels want to do business. They need you to look the other way.",
+                bg: "linear-gradient(to bottom, #2c3e50, #000)",
+                icon: "🚢",
+                location: "The Docks",
+                chapter: "Corruption",
+                options: [
+                    { text: "Work with the Cartel. The money is too good.", nextText: 145, style: "path-drug" },
+                    { text: "Refuse. It's too dangerous.", nextText: 65 }
+                ]
+            },
+            {
+                id: 64,
+                text: "You are the Mayor. The budget is falling apart. The police union is threatening a strike. The teachers are protesting. Everyone wants something you can't give.",
+                bg: "linear-gradient(to bottom, #003973, #E5E5BE)",
+                icon: "⚖️",
+                location: "Mayor's Office",
+                chapter: "Heavy Crown",
+                options: [
+                    { text: "Cave to the pressure and make dirty deals.", nextText: 65 },
+                    { text: "Stand firm on your principles, even if it means losing.", nextText: 4 }
+                ]
+            },
+            {
+                id: 65,
+                text: "You kept your office, but you sold your soul. You are a puppet for donors and mobs. You stare out the window of City Hall, trapped.",
+                bg: "linear-gradient(to bottom, #444, #000)",
+                icon: "🎭",
+                location: "Shadows",
+                chapter: "Puppet",
+                options: [{ text: "Game Over", nextText: 104, style: "restart" }]
+            },
+
+            // =========================================================================
+            // PATH OF ROMANCE (Desire)
+            // =========================================================================
+            {
+                id: 80,
+                text: "Your phone blows up. You have three dates tonight. A wealthy CEO, an exciting artist, and a kind teacher. You are craving attention.",
+                bg: "linear-gradient(to right, #ff9a9e, #fad0c4)",
+                icon: "🔥",
+                location: "2nd Street",
+                chapter: "Desire",
+                options: [
+                    { text: "Try to date all three at once.", nextText: 81, style: "path-romance" },
+                    { text: "Pick the rich CEO.", nextText: 21, style: "path-money" },
+                    { text: "Realize you need to love yourself first.", nextText: 3 }
+                ]
+            },
+            {
+                id: 81,
+                text: "You are juggling lies. You have different phones for different lovers. It is exhilarating but exhausting.",
+                bg: "linear-gradient(to right, #a18cd1, #fbc2eb)",
+                icon: "💔",
+                location: "Bedrooms",
+                chapter: "Deception",
+                options: [
+                    { text: "Keep lying. The thrill is the point.", nextText: 82, style: "path-romance" },
+                    { text: "Confess everything and face the consequences.", nextText: 5 }
+                ]
+            },
+            {
+                id: 82,
+                text: "You mixed up the names. They all found out. You are standing on the street corner, blocked by everyone you know. You are free, but empty.",
+                bg: "linear-gradient(to bottom, #200, #cbb)",
+                icon: "🚪",
+                location: "Empty Street",
+                chapter: "Alone",
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+
+            // =========================================================================
+            // ENDINGS
+            // =========================================================================
+            {
+                id: 100, 
+                text: "You help the tourist. It takes twenty minutes of charades and laughter, but you get them to the right bus stop. They shake your hand vigorously.<br><br>Walking away, you look at the sunset. You have no fame, no power, and just enough money for dinner. But you feel a profound sense of belonging. You aren't fighting the world anymore; you are living in it.<br><br><strong>You have found peace.</strong>", 
+                bg: "linear-gradient(to top, #30cfd0 0%, #330867 100%)", 
+                icon: "🕊️", 
+                location: "Inner Peace", 
+                chapter: "Victory", 
+                options: [{ text: "Start a New Journey", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 101, 
+                text: "You walked past. You kept your walls up. You protected your energy, but you starved your soul. Long Beach is a city of millions, but you managed to be the only person here.", 
+                bg: "linear-gradient(to bottom, #444, #000)", 
+                icon: "🧱", 
+                location: "Isolation", 
+                chapter: "The Wall", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 102, 
+                text: "The darkness took you. Whether it was the water or the lifestyle, you ceased to be. You became a warning story told by others.", 
+                bg: "linear-gradient(to bottom, #000, #2c3)", 
+                icon: "⚰️", 
+                location: "The End", 
+                chapter: "Tragedy", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 103, 
+                text: "You are famous. You are rich. You are miserable. You check your phone every three seconds for validation that never feels like enough. You are a ghost in a designer outfit.", 
+                bg: "linear-gradient(to bottom, #444, #000)", 
+                icon: "📱", 
+                location: "The Void", 
+                chapter: "Hollow", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 104, 
+                text: "You run this city, but you are a puppet. You serve the donors, the mobs, the shadows. You have power, but no freedom.", 
+                bg: "linear-gradient(to bottom, #444, #000)", 
+                icon: "👑", 
+                location: "Throne of Lies", 
+                chapter: "Tyrant", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 105, 
+                text: "The steel bars slam shut. The sound echoes. You have ten years to think about that one decision.", 
+                bg: "linear-gradient(to bottom, #2c3, #bdc)", 
+                icon: "⛓️", 
+                location: "Cell Block C", 
+                chapter: "Incarceration", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 106, 
+                text: "You live in a non-extradition country. You are safe, but you can never go home. You watch the ocean and wonder what happened to your friends.", 
+                bg: "linear-gradient(to bottom, #004, #1CB)", 
+                icon: "✈️", 
+                location: "Exile", 
+                chapter: "Escape", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 107, 
+                text: "You sit in your living room, angry at the TV, angry at the world. You were right about everything, but you are unhappy. Was it worth it?", 
+                bg: "linear-gradient(to bottom, #333, #111)", 
+                icon: "😡", 
+                location: "Bitter End", 
+                chapter: "Resentment", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 108, 
+                text: "You are paralyzed by the complexity of the world. You demand purity in a messy universe, so you end up doing nothing. You are a critic of life, not a participant.", 
+                bg: "linear-gradient(to bottom, #222, #444)", 
+                icon: "😶", 
+                location: "The Sidelines", 
+                chapter: "Stasis", 
+                options: [{ text: "Try Again", nextText: 1, style: "restart" }]
+            },
+            {
+                id: 149, 
+                text: "You stand on the beach. You are sober. The world is bright and loud and scary, but you are present for it. You have a long road ahead, but you are walking it.", 
+                bg: "linear-gradient(to top, #30cfd0 0%, #330867 100%)", 
+                icon: "☕", 
+                location: "New Dawn", 
+                chapter: "Sobriety", 
+                options: [{ text: "Continue", nextText: 5 }]
+            }
+        ];
+
+        // --- CORE ENGINE LOGIC ---
+
+        const textElement = document.getElementById('story-text');
+        const optionButtonsElement = document.getElementById('option-buttons');
+        const sceneDisplay = document.getElementById('scene-display');
+        const sceneIcon = document.getElementById('scene-icon');
+        const locationTitle = document.getElementById('location-title');
+        const chapterMarker = document.getElementById('chapter-marker');
+        const statusBar = document.getElementById('status-bar');
+
+        function startGame() {
+            // Retrieve save state
+            const savedNodeId = localStorage.getItem('pathOfPeaceSagaComplete');
+            if (savedNodeId && savedNodeId != 1 && savedNodeId < 100) {
+                showContinueScreen(parseInt(savedNodeId));
+            } else {
+                showTextNode(1);
+            }
+        }
+
+        function showContinueScreen(savedId) {
+            textElement.innerHTML = "Welcome back to Long Beach. A previous session was detected. Would you like to resume your journey where you left off?";
+            sceneDisplay.style.background = "linear-gradient(to right, #4facfe 0%, #00f2fe 100%)";
+            sceneIcon.innerText = "💾";
+            locationTitle.innerText = "System Menu";
+            chapterMarker.innerText = "Load Game";
+            
+            while (optionButtonsElement.firstChild) {
+                optionButtonsElement.removeChild(optionButtonsElement.firstChild);
+            }
+
+            // Continue Button
+            const contBtn = document.createElement('button');
+            contBtn.innerText = "Resume Journey";
+            contBtn.classList.add('path-money'); 
+            contBtn.addEventListener('click', () => showTextNode(savedId));
+            optionButtonsElement.appendChild(contBtn);
+
+            // New Game Button
+            const newBtn = document.createElement('button');
+            newBtn.innerText = "Start New Life";
+            newBtn.classList.add('restart');
+            newBtn.addEventListener('click', () => showTextNode(1));
+            optionButtonsElement.appendChild(newBtn);
+        }
+
+        function showTextNode(textNodeIndex) {
+            const textNode = textNodes.find(node => node.id === textNodeIndex);
+            
+            if (!textNode) {
+                console.error("Critical Error: Node " + textNodeIndex + " not found.");
+                textElement.innerText = "Error: Narrative path broken. (Node " + textNodeIndex + " missing). Please restart.";
+                return;
+            }
+
+            // Update DOM Elements
+            textElement.innerHTML = textNode.text;
+            sceneDisplay.style.background = textNode.bg;
+            sceneIcon.innerText = textNode.icon;
+            locationTitle.innerText = textNode.location || "Long Beach";
+            chapterMarker.innerText = textNode.chapter || "Journey";
+
+            // Trigger Animation
+            textElement.classList.remove('fade-in');
+            void textElement.offsetWidth; // Force Reflow
+            textElement.classList.add('fade-in');
+
+            // Clear Old Buttons
+            while (optionButtonsElement.firstChild) {
+                optionButtonsElement.removeChild(optionButtonsElement.firstChild);
+            }
+
+            // Generate New Buttons
+            textNode.options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option.text;
+                if (option.style) button.classList.add(option.style);
+                button.addEventListener('click', () => selectOption(option));
+                optionButtonsElement.appendChild(button);
+            });
+
+            // Save Progress (unless it's an Ending node >= 100)
+            if (textNodeIndex < 100 || textNodeIndex >= 140) {
+                 localStorage.setItem('pathOfPeaceSagaComplete', textNodeIndex);
+                 statusBar.innerText = "Auto-saved: " + new Date().toLocaleTimeString();
+            } else {
+                localStorage.removeItem('pathOfPeaceSagaComplete');
+                statusBar.innerText = "Journey Complete";
+            }
+        }
+
+        function selectOption(option) {
+            showTextNode(option.nextText);
+        }
+
+        // Initialize Game
+        startGame();
+
+    </script>
+</body>
+</html>
